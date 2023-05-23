@@ -1,6 +1,5 @@
 // ==UserScript==
 // @name         AutoRefreshCurrentHour
-// @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  AutoRefreshUPHDrillDown
 // @author       khoxphan@

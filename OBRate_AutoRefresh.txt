@@ -1,0 +1,108 @@
+// ==UserScript==
+// @name         AutoRefreshCurrentHour
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  AutoRefreshUPHDrillDown
+// @author       khoxphan@
+// @match        https://aftlite-na.amazon.com/labor_tracking/uph_drilldown*
+// @match        https://aftlite-eu.amazon.com/labor_tracking/uph_drilldown*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=amazon.com
+// @grant        none
+// ==/UserScript==
+
+// create checkbox element and label
+const func = document.querySelector("input[name=function]");
+const zone = document.querySelector("input[name=zone]");
+var generate = document.querySelector('input[name="commit"][type="submit"][value="Generate Report"]');
+
+var checkbox = document.createElement('input');
+checkbox.type = "checkbox";
+checkbox.style.float = "right"; // align checkbox to right
+var label = document.createElement('label');
+label.appendChild(document.createTextNode('Auto-refresh'));
+
+// create container div for checkbox and label
+var container = document.createElement('div');
+container.style.position = "absolute";
+container.style.top = "10px"; // adjust top position as needed
+container.style.right = "10px"; // adjust right position as needed
+container.appendChild(checkbox);
+container.appendChild(label);
+var buttons = document.getElementsByTagName("form")[0]; // first title on page. use this to append buttons
+//create Current Hour button
+createButton("Current Hour").onclick = function () {
+        var d = new Date();
+        setDate(d, d);
+    }
+createButton("Last Hour").onclick = function () {
+        var d = new Date();
+        var date = new Date(d.getTime() - 3600000) // subtract one hour
+        setDate(date, date);
+    }
+function createButton(name) {
+        var button = document.createElement('button');
+        button.innerHTML = name;
+        buttons.appendChild(button);
+        return button;
+    }
+function Auto() {
+        // Trigger the click event on the Auto button
+        var d = new Date();
+        setDate(d, d);
+        func.value = "pack";
+        zone.value = "--";
+        generate.click();
+}
+function setDate(start, end) {
+    document.getElementById("date_start_hour").selectedIndex = start.getHours();
+    document.getElementById("date_start_day").value = start.getDate();
+    document.getElementById("date_start_month").selectedIndex = start.getMonth();
+    document.getElementById("date_start_year").value = start.getFullYear();
+    document.getElementById("date_end_hour").selectedIndex = end.getHours();
+    document.getElementById("date_end_day").value = end.getDate();
+    document.getElementById("date_end_month").selectedIndex = end.getMonth();
+    document.getElementById("date_end_year").value = end.getFullYear();
+}
+function Sort() {
+    //Sorting
+    var thElements = document.getElementsByTagName('th');
+
+    // Loop through the th elements to find the matching element
+    for (var i = 0; i < thElements.length; i++) {
+        var thElement = thElements[i];
+
+        // Check if the element has the matching attribute values and text content
+        if (thElement.getAttribute('width') === '50' &&
+            thElement.getAttribute('align') === 'left' &&
+            thElement.classList.contains('sortcol') &&
+            thElement.textContent.trim() === 'Rate (per hour)') {
+            thElement.click;
+            break;
+}}}
+
+// append container to the document
+document.body.appendChild(container);
+
+// function to toggle auto-refresh based on checkbox state
+function toggleAutoRefresh() {
+    if (checkbox.checked) {
+        // enable auto-refresh
+        Sort;
+        setInterval(Auto, 300000); //in second
+        localStorage.setItem('autoRefreshEnabled', 'true');
+    } else {
+        // disable auto-refresh
+        clearInterval(window.autoRefreshId);
+        localStorage.setItem('autoRefreshEnabled', 'false');
+    }
+}
+
+// add event listener to checkbox
+checkbox.addEventListener('change', toggleAutoRefresh);
+
+// load initial state from local storage
+var autoRefreshEnabled = localStorage.getItem('autoRefreshEnabled');
+if (autoRefreshEnabled === 'true') {
+    checkbox.checked = true;
+    toggleAutoRefresh();
+}
